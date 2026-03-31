@@ -15,9 +15,13 @@ This repository implements a complete six-stage pipeline:
 
 The project was rerun on a larger configuration centered on approximately 1000 films, and the repository contains the final notebooks and generated artifacts used for submission.
 
-## Project Screenshot
+## Project Visuals
 
-![Example movie subgraph](images/movie_subgraph.png)
+### Example movie subgraph
+![Example movie subgraph](images/movie_subgraph.jpg)
+
+### KGE embedding visualization
+![KGE embedding visualization](images/tsne_embedding.png)
 
 ## Main Results
 
@@ -48,7 +52,8 @@ The project was rerun on a larger configuration centered on approximately 1000 f
 │  ├─ notebook_5/
 │  └─ notebook_6/
 ├─ images/
-│  └─ movie_subgraph.png
+│  ├─ movie_subgraph.jpg
+│  └─ tsne_embedding.png
 ├─ reports/
 ├─ requirements.txt
 ├─ README.md
