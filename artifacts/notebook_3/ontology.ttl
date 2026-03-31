@@ -1,0 +1,106 @@
+@prefix ex: <http://example.org/movie#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:Organization a owl:Class ;
+    rdfs:label "Organization" .
+
+ex:TemporalExpression a owl:Class ;
+    rdfs:label "TemporalExpression" .
+
+ex:directedBy a owl:ObjectProperty ;
+    rdfs:label "directedBy" ;
+    rdfs:domain ex:Film ;
+    rdfs:range ex:Person .
+
+ex:followedBy a owl:ObjectProperty ;
+    rdfs:label "followedBy" ;
+    rdfs:domain ex:Film ;
+    rdfs:range ex:Film .
+
+ex:hasCastMember a owl:ObjectProperty ;
+    rdfs:label "hasCastMember" ;
+    rdfs:domain ex:Film ;
+    rdfs:range ex:Person .
+
+ex:hasCountry a owl:ObjectProperty ;
+    rdfs:label "hasCountry" ;
+    rdfs:domain ex:Film ;
+    rdfs:range ex:Country .
+
+ex:hasGenre a owl:ObjectProperty ;
+    rdfs:label "hasGenre" ;
+    rdfs:domain ex:Film ;
+    rdfs:range ex:Genre .
+
+ex:imdbId a owl:DatatypeProperty ;
+    rdfs:label "imdbId" ;
+    rdfs:domain ex:Film ;
+    rdfs:range xsd:string .
+
+ex:mentionsEntity a owl:ObjectProperty ;
+    rdfs:label "mentionsEntity" ;
+    rdfs:domain ex:Film ;
+    rdfs:range rdfs:Resource .
+
+ex:ontology a owl:Ontology ;
+    rdfs:label "Movies Knowledge Graph Ontology" .
+
+ex:pageURL a owl:DatatypeProperty ;
+    rdfs:label "pageURL" ;
+    rdfs:domain ex:Film ;
+    rdfs:range xsd:anyURI .
+
+ex:precededBy a owl:ObjectProperty ;
+    rdfs:label "precededBy" ;
+    rdfs:domain ex:Film ;
+    rdfs:range ex:Film .
+
+ex:producedBy a owl:ObjectProperty ;
+    rdfs:label "producedBy" ;
+    rdfs:domain ex:Film ;
+    rdfs:range ex:Company .
+
+ex:releaseDate a owl:DatatypeProperty ;
+    rdfs:label "releaseDate" ;
+    rdfs:domain ex:Film ;
+    rdfs:range xsd:date .
+
+ex:sourceSummary a owl:DatatypeProperty ;
+    rdfs:label "sourceSummary" ;
+    rdfs:domain ex:Film ;
+    rdfs:range xsd:string .
+
+ex:title a owl:DatatypeProperty ;
+    rdfs:label "title" ;
+    rdfs:domain ex:Film ;
+    rdfs:range xsd:string .
+
+ex:wonAward a owl:ObjectProperty ;
+    rdfs:label "wonAward" ;
+    rdfs:domain ex:Film ;
+    rdfs:range ex:Award .
+
+ex:Award a owl:Class ;
+    rdfs:label "Award" .
+
+ex:Company a owl:Class ;
+    rdfs:label "Company" .
+
+ex:Country a owl:Class ;
+    rdfs:label "Country" ;
+    rdfs:subClassOf ex:Place .
+
+ex:Genre a owl:Class ;
+    rdfs:label "Genre" .
+
+ex:Place a owl:Class ;
+    rdfs:label "Place" .
+
+ex:Person a owl:Class ;
+    rdfs:label "Person" .
+
+ex:Film a owl:Class ;
+    rdfs:label "Film" .
+

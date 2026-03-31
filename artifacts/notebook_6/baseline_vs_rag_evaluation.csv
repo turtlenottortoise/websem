@@ -1,0 +1,54 @@
+question,baseline_answer,generated_sparql,rag_answer,rag_success,rag_rows,repair_attempts,rag_error,result_preview,baseline_correct,rag_correct,notes
+Who directed Anora?,"I do not have information about the director of ""Anora"" in this knowledge graph. The available predicates do not directly link ""Anora"" to a director.","PREFIX ex: <http://example.org/movie#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?director ?director_label
+WHERE {
+  ?film rdfs:label ""Anora"" .
+  ?film ex:directedBy ?director .
+  OPTIONAL { ?director rdfs:label ?director_label . }
+}",Anora is directed by: Sean Baker.,True,1,0,,"[{'director': 'http://example.org/movie#entity_sean_baker', 'director_label': 'Sean Baker'}]",,,
+Which films in the graph won awards?,"I can identify films that have the ""wonAward"" predicate.  There are 70 instances of this predicate in the knowledge graph.","PREFIX ex: <http://example.org/movie#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?film ?film_label
+WHERE {
+  ?film ex:wonAward ?award .
+  OPTIONAL { ?film rdfs:label ?film_label . }
+}","The graph contains 28 distinct award-winning films. Examples include: The Brutalist, Dune: Part Two, The 47, Exhuma, A Complete Unknown, The Count of Monte Cristo (2024 film), Anora, Glimmers, The Apprentice (2024 film), Babygirl.",True,28,0,,"[{'film': 'http://example.org/movie#film_Q101112656', 'film_label': 'The Brutalist'}, {'film': 'http://example.org/movie#film_Q109228991', 'film_label': 'Dune: Part Two'}, {'film': 'http://example.org/movie#film_Q115774787', 'film_label': 'The 47'}, {'film': 'http://example.org/movie#film_Q117322466', 'film_label': 'Exhuma'}, {'film': 'http://example.org/movie#film_Q118175825', 'film_label': 'A Complete Unknown'}, {'film': 'http://example.org/movie#film_Q119998666', 'film_label': 'The Count of Monte Cristo (2024 film)'}, {'film': 'http://example.org/movie#film_Q123185887', 'film_label': 'Anora'}, {'film': 'http://example.org/movie#film_Q123195211', 'film_label': 'Glimmers'}, {'film': 'http://example.org/movie#film_Q123582987', 'film_label': 'The Apprentice (2024 film)'}, {'film': 'http://example.org/movie#film_Q123861757', 'film_label': 'Babygirl'}]",,,
+What genres does Dune: Part Two have?,"I can tell you that the movie graph contains information about genres associated with movies. The `http://example.org/movie#hasGenre` predicate links movies to genres. However, I cannot directly retrieve the genres for ""Dune: Part Two"" without executing a query.","PREFIX ex: <http://example.org/movie#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?genre ?genre_label
+WHERE {
+  ?film rdfs:label ""Dune: Part Two"" .
+  ?film ex:hasGenre ?genre .
+  OPTIONAL { ?genre rdfs:label ?genre_label . }
+}","Dune: Part Two has the following genres in the graph: action film, adventure film, epic film, film based on a novel, science fiction film, speculative fiction film.",True,6,0,,"[{'genre': 'http://example.org/movie#entity_action_film', 'genre_label': 'action film'}, {'genre': 'http://example.org/movie#entity_adventure_film', 'genre_label': 'adventure film'}, {'genre': 'http://example.org/movie#entity_epic_film', 'genre_label': 'epic film'}, {'genre': 'http://example.org/movie#entity_film_based_on_a_novel', 'genre_label': 'film based on a novel'}, {'genre': 'http://example.org/movie#entity_science_fiction_film', 'genre_label': 'science fiction film'}, {'genre': 'http://example.org/movie#entity_speculative_fiction_film', 'genre_label': 'speculative fiction film'}]",,,
+Which country is associated with The Apprentice (2024 film)?,"I do not have enough information to answer this question. The knowledge graph contains information about movies, but it doesn't directly link ""The Apprentice (2024 film)"" to a specific country.","PREFIX ex: <http://example.org/movie#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?country ?country_label
+WHERE {
+  ?film rdfs:label ""The Apprentice (2024 film)"" .
+  ?film ex:hasCountry ?country .
+  OPTIONAL { ?country rdfs:label ?country_label . }
+}","The Apprentice (2024 film) is associated with the following countries in the graph: Canada, Denmark, Ireland, United States.",True,4,0,,"[{'country': 'http://example.org/movie#entity_canada', 'country_label': 'Canada'}, {'country': 'http://example.org/movie#entity_denmark', 'country_label': 'Denmark'}, {'country': 'http://example.org/movie#entity_ireland', 'country_label': 'Ireland'}, {'country': 'http://example.org/movie#entity_united_states', 'country_label': 'United States'}]",,,
+Who are the cast members of Emilia Pérez?,"I can identify relationships where a movie has cast members. However, I don't have direct information about ""Emilia Pérez"" as a specific movie title. I can find movies with the label ""Emilia Pérez"" and then list their cast members.","PREFIX ex: <http://example.org/movie#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?cast ?cast_label
+WHERE {
+  ?film rdfs:label ""Emilia Pérez"" .
+  ?film ex:hasCastMember ?cast .
+  OPTIONAL { ?cast rdfs:label ?cast_label . }
+}","Emilia Pérez has the following cast members in the graph: Adriana Paz, Karla Sofía Gascón, Selena Gomez, Zoe Saldaña.",True,4,0,,"[{'cast': 'http://example.org/movie#entity_adriana_paz', 'cast_label': 'Adriana Paz'}, {'cast': 'http://example.org/movie#entity_karla_sofia_gascon', 'cast_label': 'Karla Sofía Gascón'}, {'cast': 'http://example.org/movie#entity_selena_gomez', 'cast_label': 'Selena Gomez'}, {'cast': 'http://example.org/movie#entity_zoe_saldana', 'cast_label': 'Zoe Saldaña'}]",,,
+What awards did The Brutalist win?,"I do not have the information to answer this question. The knowledge graph contains details about movies, people, and awards, but it doesn't explicitly link ""The Brutalist"" to any specific awards it may have won.","PREFIX ex: <http://example.org/movie#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?award ?award_label
+WHERE {
+  ?film rdfs:label ""The Brutalist"" .
+  ?film ex:wonAward ?award .
+  OPTIONAL { ?award rdfs:label ?award_label . }
+}","The Brutalist won the following awards in the graph: Academy Award for Best Actor, Academy Award for Best Cinematography, Academy Award for Best Original Score, Amanda Award for Best Foreign Feature Film, Golden Globe Award for Best Motion Picture – Drama, International Federation of Film Critics, Silver Lion.",True,7,0,,"[{'award': 'http://example.org/movie#entity_academy_award_for_best_actor', 'award_label': 'Academy Award for Best Actor'}, {'award': 'http://example.org/movie#entity_academy_award_for_best_cinematography', 'award_label': 'Academy Award for Best Cinematography'}, {'award': 'http://example.org/movie#entity_academy_award_for_best_original_score', 'award_label': 'Academy Award for Best Original Score'}, {'award': 'http://example.org/movie#entity_amanda_award_for_best_foreign_feature_film', 'award_label': 'Amanda Award for Best Foreign Feature Film'}, {'award': 'http://example.org/movie#entity_golden_globe_award_for_best_motion_picture_drama', 'award_label': 'Golden Globe Award for Best Motion Picture – Drama'}, {'award': 'http://example.org/movie#entity_international_federation_of_film_critics', 'award_label': 'International Federation of Film Critics'}, {'award': 'http://example.org/movie#entity_silver_lion', 'award_label': 'Silver Lion'}]",,,

@@ -1,0 +1,11 @@
+{
+  "total_triples": 10252,
+  "train_triples": 9185,
+  "valid_triples": 526,
+  "test_triples": 541,
+  "train_ratio_actual": 0.8959227467811158,
+  "valid_ratio_actual": 0.051307062036675774,
+  "test_ratio_actual": 0.05277019118220835,
+  "train_entities": 7185,
+  "train_relations": 115
+}
