@@ -4,16 +4,20 @@ An end-to-end Semantic Web project in the movie domain, covering data acquisitio
 
 ## Overview
 
-This repository implements a complete pipeline across six notebooks:
+This repository implements a complete six-stage pipeline:
 
-1. Data crawling from Wikidata and Wikipedia  
-2. Cleaning, named entity recognition, and relation extraction  
-3. RDF graph and ontology construction  
-4. Entity linking and graph expansion with Wikidata  
-5. SWRL reasoning and knowledge graph embedding  
-6. Graph-grounded QA with RDF/SPARQL and a local Ollama model  
+1. Data crawling from Wikidata and Wikipedia
+2. Cleaning, named entity recognition, and relation extraction
+3. RDF graph and ontology construction
+4. Entity linking and graph expansion with Wikidata
+5. SWRL reasoning and knowledge graph embedding
+6. Graph-grounded QA with RDF/SPARQL and a local Ollama model
 
-The project was rerun on a larger configuration centered on approximately 1000 films, and the repository is organized around the final notebook outputs used for submission.
+The project was rerun on a larger configuration centered on approximately 1000 films, and the repository contains the final notebooks and generated artifacts used for submission.
+
+## Project Screenshot
+
+![Example movie subgraph](images/movie_subgraph.png)
 
 ## Main Results
 
@@ -24,10 +28,6 @@ The project was rerun on a larger configuration centered on approximately 1000 f
 - KGE subset prepared with **3213 triples**, **1826 entities**, and **61 relations**
 - Two KGE models evaluated: **TransE** and **DistMult**
 - Graph-grounded QA answered **6/6** evaluation questions successfully
-
-## Screenshot
-
-![KGE embedding visualization](images/tsne_embedding.png)
 
 ## Repository Structure
 
@@ -48,7 +48,7 @@ The project was rerun on a larger configuration centered on approximately 1000 f
 │  ├─ notebook_5/
 │  └─ notebook_6/
 ├─ images/
-│  └─ tsne_embedding.png
+│  └─ movie_subgraph.png
 ├─ reports/
 ├─ requirements.txt
 ├─ README.md
