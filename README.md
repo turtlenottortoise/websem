@@ -302,5 +302,5 @@ Then run:
 This repository is intended to be submitted together with:
 - the notebook set in `notebooks/`
 - the generated artifacts in `artifacts/`
-- the final report in `reports/`
 - the final GitHub release tagged as `v1.0-final`
+- the video report
