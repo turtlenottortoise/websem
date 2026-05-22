@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Knowledge Graph — Project Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0e17;
+  --surface: #12172a;
+  --card: #161d33;
+  --border: #1f2d50;
+  --accent1: #4f8eff;
+  --accent2: #00d4aa;
+  --accent3: #ff6b6b;
+  --accent4: #ffd166;
+  --accent5: #c77dff;
+  --text: #e8edf7;
+  --muted: #6b7a9f;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Syne', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background grid */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(79,142,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,142,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+
+/* Header */
+header {
+  padding: 56px 0 40px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+.header-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+.header-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+h1 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+h1 span { color: var(--accent1); }
+.header-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+  letter-spacing: 0.05em;
+}
+.tag-blue  { color: var(--accent1); border-color: rgba(79,142,255,0.3); background: rgba(79,142,255,0.06); }
+.tag-green { color: var(--accent2); border-color: rgba(0,212,170,0.3);  background: rgba(0,212,170,0.06); }
+.tag-red   { color: var(--accent3); border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.06); }
+.tag-yellow{ color: var(--accent4); border-color: rgba(255,209,102,0.3); background: rgba(255,209,102,0.06); }
+.tag-purple{ color: var(--accent5); border-color: rgba(199,125,255,0.3); background: rgba(199,125,255,0.06); }
+
+/* Stats strip */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 56px;
+}
+.stat-cell {
+  background: var(--card);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat-number {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.stat-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Section */
+.section { margin-bottom: 72px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.step-badge {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.section-desc {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Cards */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+.card-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 20px;
+}
+.card canvas { display: block; }
+
+/* Pipeline diagram */
+.pipeline {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 56px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.pipe-step {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.pipe-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 40px;
+  background: var(--border);
+}
+.pipe-node {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  width: 100%;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
+}
+.pipe-node:hover { transform: translateY(-2px); }
+.pipe-icon { font-size: 28px; margin-bottom: 10px; }
+.pipe-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+.pipe-name { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.pipe-detail {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.pipe-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Funnel */
+.funnel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+.funnel-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.funnel-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  width: 160px;
+  flex-shrink: 0;
+  text-align: right;
+}
+.funnel-bar-bg {
+  flex: 1;
+  height: 32px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.funnel-bar {
+  height: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  transition: width 1s ease;
+}
+.funnel-pct {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  width: 45px;
+  text-align: right;
+}
+
+/* KGE metric bars */
+.metric-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.metric-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  width: 80px;
+  flex-shrink: 0;
+}
+.metric-bars { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.metric-bar-row { display: flex; align-items: center; gap: 8px; }
+.metric-bar-bg { flex: 1; height: 20px; background: rgba(255,255,255,0.04); border-radius: 4px; overflow: hidden; }
+.metric-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; display: flex; align-items: center; padding: 0 8px; }
+.metric-val { font-family: var(--mono); font-size: 10px; font-weight: 500; }
+.metric-model-label { font-family: var(--mono); font-size: 10px; color: var(--muted); width: 60px; }
+
+/* RAG QA showcase */
+.qa-list { display: flex; flex-direction: column; gap: 16px; }
+.qa-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.qa-question {
+  background: rgba(79,142,255,0.08);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.qa-q-icon { color: var(--accent1); font-size: 16px; }
+.qa-answers { display: grid; grid-template-columns: 1fr 1fr; }
+.qa-col {
+  padding: 14px 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.qa-col:first-child { border-right: 1px solid var(--border); }
+.qa-col-label {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+.qa-col.baseline .qa-col-label { color: var(--accent3); }
+.qa-col.rag .qa-col-label { color: var(--accent2); }
+.qa-col.rag { color: var(--text); }
+.qa-rows-badge {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0,212,170,0.1);
+  color: var(--accent2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 10px;
+}
+
+/* Graph viz */
+#graph-canvas-wrap {
+  width: 100%;
+  height: 420px;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+#graph-svg { width: 100%; height: 100%; }
+
+/* Legend */
+.legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .qa-answers { grid-template-columns: 1fr; }
+  .qa-col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  .header-inner { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ── Header ───────────────────────────────────────────────────────────── -->
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="header-label">Semantic Web · Knowledge Graph Project</div>
+      <h1>Movie <span>Knowledge Graph</span><br>End-to-End Pipeline</h1>
+      <div class="header-meta">
+        <span class="tag tag-blue">RDF / OWL</span>
+        <span class="tag tag-green">SPARQL</span>
+        <span class="tag tag-red">SWRL Reasoning</span>
+        <span class="tag tag-yellow">KGE Embeddings</span>
+        <span class="tag tag-purple">RAG / QA</span>
+      </div>
+    </div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:2;text-align:right;">
+      <div>6 NOTEBOOKS</div>
+      <div>~1,000 FILMS</div>
+      <div>42,989 TRIPLES</div>
+      <div>127 PREDICATES</div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Global stats strip ────────────────────────────────────────────────── -->
+<div class="stats-strip">
+  <div class="stat-cell">
+    <div class="stat-number" style="color:var(--accent1)">998</div>
+    <div class="stat-label">Films crawled</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number" style="color:var(--accent2)">5,262</div>
+    <div class="stat-label">Entity mentions</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number" style="color:var(--accent3)">655</div>
+    <div class="stat-label">Extracted relations</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number" style="color:var(--accent4)">42,989</div>
+    <div class="stat-label">Final graph triples</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number" style="color:var(--accent5)">4,841</div>
+    <div class="stat-label">owl:sameAs links</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number" style="color:var(--accent2)">28</div>
+    <div class="stat-label">Inferred award films</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number" style="color:var(--accent1)">6/6</div>
+    <div class="stat-label">RAG QA success</div>
+  </div>
+</div>
+
+<!-- ── Pipeline overview ─────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="step-badge" style="background:rgba(79,142,255,0.1);color:var(--accent1);border:1px solid rgba(79,142,255,0.3)">▶</div>
+    <div>
+      <div class="section-title">Full Pipeline</div>
+      <div class="section-desc">From raw Wikidata to graph-grounded question answering</div>
+    </div>
+  </div>
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="pipe-node" style="border-color:rgba(79,142,255,0.4)">
+        <div class="pipe-icon">🕷️</div>
+        <div class="pipe-num">NB 01</div>
+        <div class="pipe-name">Data Crawling</div>
+        <div class="pipe-detail">998 films<br>Wikidata + Wikipedia<br>plots, cast, awards</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-node" style="border-color:rgba(0,212,170,0.4)">
+        <div class="pipe-icon">🧠</div>
+        <div class="pipe-num">NB 02</div>
+        <div class="pipe-name">NER + Relations</div>
+        <div class="pipe-detail">580 summaries<br>5,262 entities<br>655 relations</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-node" style="border-color:rgba(255,107,107,0.4)">
+        <div class="pipe-icon">🔷</div>
+        <div class="pipe-num">NB 03</div>
+        <div class="pipe-name">RDF Graph</div>
+        <div class="pipe-detail">OWL ontology<br>1,030 film nodes<br>~9,921 triples</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-node" style="border-color:rgba(255,209,102,0.4)">
+        <div class="pipe-icon">🔗</div>
+        <div class="pipe-num">NB 04</div>
+        <div class="pipe-name">Entity Linking</div>
+        <div class="pipe-detail">4,841 sameAs<br>Wikidata expansion<br>42,958 triples</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-node" style="border-color:rgba(199,125,255,0.4)">
+        <div class="pipe-icon">⚡</div>
+        <div class="pipe-num">NB 05</div>
+        <div class="pipe-name">Reasoning + KGE</div>
+        <div class="pipe-detail">28 inferred films<br>TransE · DistMult<br>MRR 0.162</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-node" style="border-color:rgba(0,212,170,0.4)">
+        <div class="pipe-icon">💬</div>
+        <div class="pipe-num">NB 06</div>
+        <div class="pipe-name">RAG / QA</div>
+        <div class="pipe-detail">SPARQL grounding<br>Ollama LLM<br>6/6 correct</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NB1: Data crawling ─────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="step-badge" style="background:rgba(79,142,255,0.1);color:var(--accent1);border:1px solid rgba(79,142,255,0.3)">01</div>
+    <div>
+      <div class="section-title">Data Crawling</div>
+      <div class="section-desc">Wikidata SPARQL + Wikipedia article scraping</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Crawl funnel</div>
+      <div class="funnel">
+        <div class="funnel-bar-wrap">
+          <div class="funnel-label">Wikidata films</div>
+          <div class="funnel-bar-bg"><div class="funnel-bar" style="width:100%;background:linear-gradient(90deg,rgba(79,142,255,0.7),rgba(79,142,255,0.4));color:white">998</div></div>
+          <div class="funnel-pct">100%</div>
+        </div>
+        <div class="funnel-bar-wrap">
+          <div class="funnel-label">With Wikipedia plot</div>
+          <div class="funnel-bar-bg"><div class="funnel-bar" style="width:65%;background:linear-gradient(90deg,rgba(0,212,170,0.7),rgba(0,212,170,0.4));color:white">649</div></div>
+          <div class="funnel-pct">65%</div>
+        </div>
+        <div class="funnel-bar-wrap">
+          <div class="funnel-label">Cleaned summaries</div>
+          <div class="funnel-bar-bg"><div class="funnel-bar" style="width:58.1%;background:linear-gradient(90deg,rgba(199,125,255,0.7),rgba(199,125,255,0.4));color:white">580</div></div>
+          <div class="funnel-pct">58%</div>
+        </div>
+        <div class="funnel-bar-wrap">
+          <div class="funnel-label">With cast data</div>
+          <div class="funnel-bar-bg"><div class="funnel-bar" style="width:66.7%;background:linear-gradient(90deg,rgba(255,209,102,0.7),rgba(255,209,102,0.4));color:#111">666</div></div>
+          <div class="funnel-pct">67%</div>
+        </div>
+        <div class="funnel-bar-wrap">
+          <div class="funnel-label">With award data</div>
+          <div class="funnel-bar-bg"><div class="funnel-bar" style="width:6.8%;background:linear-gradient(90deg,rgba(255,107,107,0.8),rgba(255,107,107,0.5));color:white">68</div></div>
+          <div class="funnel-pct">6.8%</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top genres in crawled data</div>
+      <canvas id="genreChart" height="180"></canvas>
+    </div>
+  </div>
+  <div style="margin-top:20px">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Top countries of origin</div>
+      <canvas id="countryChart" height="200"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Wikidata fields collected per film</div>
+      <canvas id="fieldsChart" height="200"></canvas>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ── NB2: NER + Relations ────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="step-badge" style="background:rgba(0,212,170,0.1);color:var(--accent2);border:1px solid rgba(0,212,170,0.3)">02</div>
+    <div>
+      <div class="section-title">Cleaning, NER & Relation Extraction</div>
+      <div class="section-desc">spaCy NER on cleaned Wikipedia summaries + dependency-based relation extraction</div>
+    </div>
+  </div>
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">Named entity types (5,262 mentions)</div>
+      <canvas id="nerChart" height="220"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Top extracted predicates (655 relations)</div>
+      <canvas id="relChart" height="220"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Extraction method breakdown</div>
+      <canvas id="methodChart" height="220"></canvas>
+      <div style="margin-top:16px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8;">
+        <div>→ <span style="color:var(--text)">root_verb_fallback</span> — 647 relations</div>
+        <div>→ <span style="color:var(--text)">dependency parse</span> — 8 relations</div>
+        <div style="margin-top:8px;color:var(--accent4)">⚠ Most extractions fall back to root verb,<br>showing hard NLP of movie plot text</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NB3: RDF Graph ─────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="step-badge" style="background:rgba(255,107,107,0.1);color:var(--accent3);border:1px solid rgba(255,107,107,0.3)">03</div>
+    <div>
+      <div class="section-title">RDF Graph & Ontology Construction</div>
+      <div class="section-desc">Custom OWL ontology · Turtle serialisation · 1,030 film nodes</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Relation distribution in initial graph</div>
+      <canvas id="relDistChart" height="240"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Example subgraph — Anora (interactive)</div>
+      <div id="graph-canvas-wrap">
+        <svg id="graph-svg" viewBox="0 0 700 400"></svg>
+      </div>
+      <div class="legend" style="margin-top:12px">
+        <div class="legend-item"><div class="legend-dot" style="background:#4f8eff"></div>Film</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff8c42"></div>Director</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#6acc65"></div>Cast</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c77dff"></div>Genre</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>Country</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffd166"></div>Award</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NB4: Alignment ─────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="step-badge" style="background:rgba(255,209,102,0.1);color:var(--accent4);border:1px solid rgba(255,209,102,0.3)">04</div>
+    <div>
+      <div class="section-title">Entity Linking & Graph Expansion</div>
+      <div class="section-desc">Wikidata alignment via owl:sameAs · graph enrichment with external triples</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Graph growth across pipeline stages</div>
+      <canvas id="growthChart" height="240"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Alignment link types</div>
+      <div style="display:flex;flex-direction:column;gap:20px;justify-content:center;height:240px;padding:20px 0">
+        <div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px">owl:sameAs — entity identity across KGs</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="flex:1;height:36px;background:rgba(255,255,255,0.04);border-radius:6px;overflow:hidden">
+              <div style="width:99.8%;height:100%;background:linear-gradient(90deg,rgba(79,142,255,0.8),rgba(79,142,255,0.4));border-radius:6px;display:flex;align-items:center;padding-left:12px;font-family:var(--mono);font-size:13px;font-weight:500;color:white">4,841</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px">owl:equivalentProperty — predicate alignment</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="flex:1;height:36px;background:rgba(255,255,255,0.04);border-radius:6px;overflow:hidden">
+              <div style="width:0.2%;height:100%;background:linear-gradient(90deg,rgba(0,212,170,0.8),rgba(0,212,170,0.4));border-radius:6px;min-width:60px;display:flex;align-items:center;padding-left:12px;font-family:var(--mono);font-size:13px;font-weight:500;color:white">9</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:rgba(79,142,255,0.06);border:1px solid rgba(79,142,255,0.2);border-radius:8px;padding:14px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8">
+          <div>Total alignment triples: <span style="color:var(--text)">4,850</span></div>
+          <div>Wikidata URI matched: <span style="color:var(--accent2)">~99.8%</span> entity links</div>
+          <div>Graph ×4.3 growth after expansion</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NB5: Reasoning + KGE ───────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="step-badge" style="background:rgba(199,125,255,0.1);color:var(--accent5);border:1px solid rgba(199,125,255,0.3)">05</div>
+    <div>
+      <div class="section-title">SWRL Reasoning & Knowledge Graph Embeddings</div>
+      <div class="section-desc">Pellet reasoner · TransE · DistMult · 10,252 triple KGE subset</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">KGE model comparison — all metrics</div>
+      <div style="margin-top:8px">
+        <div style="display:flex;gap:16px;margin-bottom:20px;font-family:var(--mono);font-size:11px">
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:2px;background:var(--accent1)"></div>TransE</div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:12px;height:12px;border-radius:2px;background:var(--accent3)"></div>DistMult</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">MRR</div>
+          <div class="metric-bars">
+            <div class="metric-bar-row">
+              <div class="metric-model-label" style="color:var(--muted)">TransE</div>
+              <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:19.8%;background:rgba(79,142,255,0.6)"><span class="metric-val">0.043</span></div></div>
+            </div>
+            <div class="metric-bar-row">
+              <div class="metric-model-label" style="color:var(--muted)">DistMult</div>
+              <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:74.6%;background:rgba(255,107,107,0.7)"><span class="metric-val">0.162</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Hits@1</div>
+          <div class="metric-bars">
+            <div class="metric-bar-row">
+              <div class="metric-model-label" style="color:var(--muted)">TransE</div>
+              <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:0%;background:rgba(79,142,255,0.6)"><span class="metric-val" style="margin-left:8px;color:var(--muted)">0.000</span></div></div>
+            </div>
+            <div class="metric-bar-row">
+              <div class="metric-model-label" style="color:var(--muted)">DistMult</div>
+              <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:60%;background:rgba(255,107,107,0.7)"><span class="metric-val">0.130</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Hits@3</div>
+          <div class="metric-bars">
+            <div class="metric-bar-row">
+              <div class="metric-model-label" style="color:var(--muted)">TransE</div>
+              <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:28%;background:rgba(79,142,255,0.6)"><span class="metric-val">0.061</span></div></div>
+            </div>
+            <div class="metric-bar-row">
+              <div class="metric-model-label" style="color:var(--muted)">DistMult</div>
+              <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:80.8%;background:rgba(255,107,107,0.7)"><span class="metric-val">0.176</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Hits@10</div>
+          <div class="metric-bars">
+            <div class="metric-bar-row">
+              <div class="metric-model-label" style="color:var(--muted)">TransE</div>
+              <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:49.4%;background:rgba(79,142,255,0.6)"><span class="metric-val">0.107</span></div></div>
+            </div>
+            <div class="metric-bar-row">
+              <div class="metric-model-label" style="color:var(--muted)">DistMult</div>
+              <div class="metric-bar-bg"><div class="metric-bar-fill" style="width:100%;background:rgba(255,107,107,0.7)"><span class="metric-val">0.217</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">DistMult size sensitivity — MRR vs training set</div>
+      <canvas id="sizeChart" height="180"></canvas>
+      <div style="margin-top:16px;background:rgba(199,125,255,0.06);border:1px solid rgba(199,125,255,0.2);border-radius:8px;padding:14px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8">
+        <div>KGE subset: <span style="color:var(--text)">10,252 triples · 1,826 entities · 61 relations</span></div>
+        <div>Train / Valid / Test: <span style="color:var(--text)">9,185 / 526 / 541</span></div>
+        <div>SWRL inferred <span style="color:var(--accent5)">28 AwardWinningFilm</span> instances</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NB6: RAG / QA ──────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">
+    <div class="step-badge" style="background:rgba(0,212,170,0.1);color:var(--accent2);border:1px solid rgba(0,212,170,0.3)">06</div>
+    <div>
+      <div class="section-title">Graph-Grounded QA (RAG over SPARQL)</div>
+      <div class="section-desc">Natural language → SPARQL → Ollama LLM · 6/6 questions answered correctly</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-title">SPARQL result rows per question</div>
+      <canvas id="ragChart" height="200"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Baseline vs RAG comparison</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+        <div style="background:rgba(255,107,107,0.06);border:1px solid rgba(255,107,107,0.2);border-radius:8px;padding:16px">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--accent3);letter-spacing:0.12em;margin-bottom:8px">BASELINE (no graph)</div>
+          <div style="font-size:13px;line-height:1.6;color:var(--muted)">Cannot retrieve specific facts — gives generic descriptions of predicates. Fails on all 6 questions requiring entity-level data.</div>
+        </div>
+        <div style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.2);border-radius:8px;padding:16px">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--accent2);letter-spacing:0.12em;margin-bottom:8px">RAG + SPARQL GROUNDING</div>
+          <div style="font-size:13px;line-height:1.6;color:var(--text)">Generates valid SPARQL, executes against the graph, grounds the answer in real triples. 6/6 factually correct responses with zero hallucination.</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;background:var(--surface);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:24px;font-weight:800;color:var(--accent3)">0/6</div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--muted)">Baseline correct</div>
+          </div>
+          <div style="flex:1;background:var(--surface);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:24px;font-weight:800;color:var(--accent2)">6/6</div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--muted)">RAG correct</div>
+          </div>
+          <div style="flex:1;background:var(--surface);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:24px;font-weight:800;color:var(--accent4)">0</div>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--muted)">Repair attempts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Question-by-question evaluation</div>
+    <div class="qa-list">
+
+      <div class="qa-item">
+        <div class="qa-question"><span class="qa-q-icon">◆</span> Who directed Anora?</div>
+        <div class="qa-answers">
+          <div class="qa-col baseline"><span class="qa-col-label">Baseline</span>"I do not have information about the director of Anora in this knowledge graph."</div>
+          <div class="qa-col rag"><span class="qa-col-label">RAG</span>Anora is directed by: <strong>Sean Baker</strong>.<div class="qa-rows-badge">✓ 1 SPARQL row</div></div>
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question"><span class="qa-q-icon">◆</span> Which films in the graph won awards?</div>
+        <div class="qa-answers">
+          <div class="qa-col baseline"><span class="qa-col-label">Baseline</span>"There are 70 instances of wonAward predicate." — no film names returned.</div>
+          <div class="qa-col rag"><span class="qa-col-label">RAG</span><strong>28 distinct award-winning films</strong> including The Brutalist, Dune: Part Two, Anora, Emilia Pérez, A Complete Unknown…<div class="qa-rows-badge">✓ 28 SPARQL rows</div></div>
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question"><span class="qa-q-icon">◆</span> What genres does Dune: Part Two have?</div>
+        <div class="qa-answers">
+          <div class="qa-col baseline"><span class="qa-col-label">Baseline</span>"I cannot directly retrieve the genres without executing a query."</div>
+          <div class="qa-col rag"><span class="qa-col-label">RAG</span><strong>action film, adventure film, epic film, film based on a novel, science fiction film, speculative fiction film</strong><div class="qa-rows-badge">✓ 6 SPARQL rows</div></div>
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question"><span class="qa-q-icon">◆</span> Which country is associated with The Apprentice (2024)?</div>
+        <div class="qa-answers">
+          <div class="qa-col baseline"><span class="qa-col-label">Baseline</span>"I do not have enough information to answer this question."</div>
+          <div class="qa-col rag"><span class="qa-col-label">RAG</span><strong>Canada, Denmark, Ireland, United States</strong><div class="qa-rows-badge">✓ 4 SPARQL rows</div></div>
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question"><span class="qa-q-icon">◆</span> Who are the cast members of Emilia Pérez?</div>
+        <div class="qa-answers">
+          <div class="qa-col baseline"><span class="qa-col-label">Baseline</span>"I don't have direct information about Emilia Pérez as a specific movie title."</div>
+          <div class="qa-col rag"><span class="qa-col-label">RAG</span><strong>Adriana Paz, Karla Sofía Gascón, Selena Gomez, Zoe Saldaña</strong><div class="qa-rows-badge">✓ 4 SPARQL rows</div></div>
+        </div>
+      </div>
+
+      <div class="qa-item">
+        <div class="qa-question"><span class="qa-q-icon">◆</span> What awards did The Brutalist win?</div>
+        <div class="qa-answers">
+          <div class="qa-col baseline"><span class="qa-col-label">Baseline</span>"I do not have the information to answer this question."</div>
+          <div class="qa-col rag"><span class="qa-col-label">RAG</span><strong>Academy Award for Best Actor, Best Cinematography, Best Original Score, Golden Globe Best Drama, Palme d'Or Silver Lion</strong>…<div class="qa-rows-badge">✓ 7 SPARQL rows</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer style="border-top:1px solid var(--border);padding:32px 0;margin-top:32px;font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
+  <div>Movie Knowledge Graph · Semantic Web Project · 6 Notebooks · rdflib · spaCy · PyKEEN · SPARQL · Ollama</div>
+  <div>42,989 triples · 127 predicates · 15,873 unique URIs</div>
+</footer>
+
+</div><!-- /container -->
+
+<script>
+Chart.defaults.color = '#6b7a9f';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const gridColor = 'rgba(31,45,80,0.8)';
+
+// ── Genre chart ──────────────────────────────────────────────────────────────
+new Chart(document.getElementById('genreChart'), {
+  type: 'bar',
+  data: {
+    labels: ['drama', 'thriller', 'documentary', 'comedy', 'action', 'horror', 'sci-fi', 'adventure', 'romance', 'mystery'],
+    datasets: [{
+      data: [151, 75, 70, 66, 61, 37, 28, 27, 19, 17],
+      backgroundColor: 'rgba(79,142,255,0.55)',
+      borderColor: 'rgba(79,142,255,0.9)',
+      borderWidth: 1, borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true, plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { maxRotation: 35 } },
+      y: { grid: { color: gridColor }, beginAtZero: true }
+    }
+  }
+});
+
+// ── Country chart ─────────────────────────────────────────────────────────────
+new Chart(document.getElementById('countryChart'), {
+  type: 'bar',
+  data: {
+    labels: ['USA', 'India', 'France', 'Spain', 'Canada', 'UK', 'Italy', 'Japan', 'Germany', 'Belgium'],
+    datasets: [{
+      data: [207, 203, 63, 45, 42, 41, 32, 29, 25, 19],
+      backgroundColor: [
+        'rgba(79,142,255,0.6)','rgba(0,212,170,0.6)','rgba(255,107,107,0.6)',
+        'rgba(255,209,102,0.6)','rgba(199,125,255,0.6)','rgba(79,142,255,0.5)',
+        'rgba(0,212,170,0.5)','rgba(255,107,107,0.5)','rgba(255,209,102,0.5)','rgba(199,125,255,0.5)'
+      ],
+      borderWidth: 0, borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true, plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, beginAtZero: true }
+    }
+  }
+});
+
+// ── Fields collected chart ────────────────────────────────────────────────────
+new Chart(document.getElementById('fieldsChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Directors', 'Cast members', 'Award entries', 'Genres', 'Countries', 'Prod. companies', 'Sequel links'],
+    datasets: [{
+      label: 'Total entries',
+      data: [666, 3008, 68, 856, 985, 271, 32],
+      backgroundColor: 'rgba(0,212,170,0.5)',
+      borderColor: 'rgba(0,212,170,0.9)',
+      borderWidth: 1, borderRadius: 4,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, beginAtZero: true },
+      y: { grid: { color: gridColor } }
+    }
+  }
+});
+
+// ── NER chart ─────────────────────────────────────────────────────────────────
+new Chart(document.getElementById('nerChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['PERSON', 'ORG', 'DATE', 'GPE'],
+    datasets: [{
+      data: [3122, 945, 770, 425],
+      backgroundColor: ['rgba(79,142,255,0.75)','rgba(0,212,170,0.75)','rgba(255,209,102,0.75)','rgba(199,125,255,0.75)'],
+      borderColor: 'rgba(22,29,51,1)',
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 12 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw.toLocaleString()} (${Math.round(ctx.raw/5262*100)}%)` } }
+    }
+  }
+});
+
+// ── Relation predicate chart ──────────────────────────────────────────────────
+new Chart(document.getElementById('relChart'), {
+  type: 'bar',
+  data: {
+    labels: ['star', 'feature', 'follow', 'produce', 'release', 'premier', 'direct', 'base', 'compose', 'write'],
+    datasets: [{
+      data: [256, 41, 40, 39, 31, 29, 20, 13, 12, 7],
+      backgroundColor: 'rgba(255,107,107,0.55)',
+      borderColor: 'rgba(255,107,107,0.9)',
+      borderWidth: 1, borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true, plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { maxRotation: 35 } },
+      y: { grid: { color: gridColor }, beginAtZero: true }
+    }
+  }
+});
+
+// ── Method chart ──────────────────────────────────────────────────────────────
+new Chart(document.getElementById('methodChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['root_verb_fallback', 'dependency_parse'],
+    datasets: [{
+      data: [647, 8],
+      backgroundColor: ['rgba(255,209,102,0.75)', 'rgba(0,212,170,0.75)'],
+      borderColor: 'rgba(22,29,51,1)', borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom', labels: { padding: 12 } } }
+  }
+});
+
+// ── Relation distribution (NB3) ───────────────────────────────────────────────
+new Chart(document.getElementById('relDistChart'), {
+  type: 'bar',
+  data: {
+    labels: ['mentionsEntity','hasCastMember','hasCountry','hasGenre','directedBy','extracted\nrelations','producedBy','wonAward','precededBy','followedBy'],
+    datasets: [{
+      data: [5095, 3008, 985, 856, 666, 655, 271, 68, 22, 10],
+      backgroundColor: [
+        'rgba(79,142,255,0.7)','rgba(0,212,170,0.7)','rgba(255,107,107,0.7)',
+        'rgba(199,125,255,0.7)','rgba(255,209,102,0.7)','rgba(79,142,255,0.5)',
+        'rgba(0,212,170,0.5)','rgba(255,107,107,0.5)','rgba(199,125,255,0.5)','rgba(255,209,102,0.5)'
+      ],
+      borderWidth: 0, borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true, plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { maxRotation: 35, font: { size: 10 } } },
+      y: { grid: { color: gridColor }, beginAtZero: true }
+    }
+  }
+});
+
+// ── Growth chart (NB4) ────────────────────────────────────────────────────────
+new Chart(document.getElementById('growthChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Initial\n(NB3)', 'Alignment\n(NB4)', 'Expanded\n(NB4)', 'Combined\nExpanded (NB4)'],
+    datasets: [{
+      data: [9921, 4850, 19875, 42958],
+      backgroundColor: ['rgba(79,142,255,0.65)','rgba(0,212,170,0.65)','rgba(255,107,107,0.65)','rgba(199,125,255,0.65)'],
+      borderWidth: 0, borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, beginAtZero: true,
+           ticks: { callback: v => v >= 1000 ? v/1000+'k' : v } }
+    }
+  }
+});
+
+// ── Size sensitivity (NB5) ────────────────────────────────────────────────────
+new Chart(document.getElementById('sizeChart'), {
+  type: 'line',
+  data: {
+    labels: ['1,000', '2,000', '10,252'],
+    datasets: [{
+      label: 'MRR (DistMult)',
+      data: [0.003267, 0.001828, 0.010381],
+      borderColor: 'rgba(199,125,255,0.9)',
+      backgroundColor: 'rgba(199,125,255,0.12)',
+      pointBackgroundColor: 'rgba(199,125,255,1)',
+      pointRadius: 6, tension: 0.3, fill: true, borderWidth: 2.5,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor } },
+      y: { grid: { color: gridColor }, beginAtZero: true,
+           ticks: { callback: v => v.toFixed(3) } }
+    }
+  }
+});
+
+// ── RAG chart (NB6) ───────────────────────────────────────────────────────────
+new Chart(document.getElementById('ragChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Director\nof Anora', 'Award-\nwinning films', 'Dune PT2\ngenres', 'Apprentice\ncountries', 'Emilia Pérez\ncast', 'Brutalist\nawards'],
+    datasets: [{
+      data: [1, 28, 6, 4, 4, 7],
+      backgroundColor: 'rgba(0,212,170,0.6)',
+      borderColor: 'rgba(0,212,170,1)',
+      borderWidth: 1, borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.raw} SPARQL result rows` } }
+    },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { font: { size: 10 } } },
+      y: { grid: { color: gridColor }, beginAtZero: true, ticks: { stepSize: 5 } }
+    }
+  }
+});
+
+// ── Interactive Anora subgraph (SVG) ──────────────────────────────────────────
+(function() {
+  const svg = document.getElementById('graph-svg');
+  const W = 700, H = 400;
+
+  const nodes = [
+    { id: 'anora',     label: 'Anora',               type: 'film',    x: 350, y: 195 },
+    { id: 'baker',     label: 'Sean Baker',           type: 'dir',     x: 175, y: 90 },
+    { id: 'mikey',     label: 'Mikey Madison',        type: 'cast',    x: 80,  y: 210 },
+    { id: 'yura',      label: 'Yura Borisov',         type: 'cast',    x: 145, y: 330 },
+    { id: 'mark',      label: 'Mark Eydelshteyn',     type: 'cast',    x: 280, y: 360 },
+    { id: 'karren',    label: 'Karren Karagulian',    type: 'cast',    x: 460, y: 360 },
+    { id: 'ella',      label: 'Ella Rubin',           type: 'cast',    x: 590, y: 280 },
+    { id: 'aleksei',   label: 'Aleksei Serebryakov',  type: 'cast',    x: 610, y: 150 },
+    { id: 'comedy',    label: 'comedy drama',         type: 'genre',   x: 490, y: 75  },
+    { id: 'usa',       label: 'United States',        type: 'country', x: 280, y: 55  },
+    { id: 'oscar_pic', label: 'Best Picture',         type: 'award',   x: 530, y: 205 },
+    { id: 'oscar_dir', label: 'Best Director',        type: 'award',   x: 430, y: 290 },
+    { id: 'palme',     label: "Palme d'Or",           type: 'award',   x: 620, y: 60  },
+  ];
+
+  const edges = [
+    { s: 'anora', t: 'baker',     label: 'directedBy' },
+    { s: 'anora', t: 'mikey',     label: 'hasCastMember' },
+    { s: 'anora', t: 'yura',      label: 'hasCastMember' },
+    { s: 'anora', t: 'mark',      label: 'hasCastMember' },
+    { s: 'anora', t: 'karren',    label: 'hasCastMember' },
+    { s: 'anora', t: 'ella',      label: 'hasCastMember' },
+    { s: 'anora', t: 'aleksei',   label: 'hasCastMember' },
+    { s: 'anora', t: 'comedy',    label: 'hasGenre' },
+    { s: 'anora', t: 'usa',       label: 'hasCountry' },
+    { s: 'anora', t: 'oscar_pic', label: 'wonAward' },
+    { s: 'anora', t: 'oscar_dir', label: 'wonAward' },
+    { s: 'anora', t: 'palme',     label: 'wonAward' },
+  ];
+
+  const colors = {
+    film: '#4f8eff', dir: '#ff8c42', cast: '#6acc65',
+    genre: '#c77dff', country: '#ff6b6b', award: '#ffd166'
+  };
+
+  const ns = 'http://www.w3.org/2000/svg';
+
+  function el(tag, attrs, text) {
+    const e = document.createElementNS(ns, tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    if (text) e.textContent = text;
+    return e;
+  }
+
+  // defs for arrowhead
+  const defs = el('defs', {});
+  const marker = el('marker', { id: 'arrow', markerWidth: '8', markerHeight: '8', refX: '6', refY: '3', orient: 'auto' });
+  marker.appendChild(el('path', { d: 'M0,0 L0,6 L8,3 z', fill: '#3a4a70' }));
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+
+  // nodeMap
+  const nodeMap = {};
+  nodes.forEach(n => nodeMap[n.id] = n);
+
+  // edges
+  edges.forEach(e => {
+    const s = nodeMap[e.s], t = nodeMap[e.t];
+    const dx = t.x - s.x, dy = t.y - s.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const sr = s.id === 'anora' ? 40 : 28;
+    const tr = 28;
+    const x1 = s.x + dx/dist*sr, y1 = s.y + dy/dist*sr;
+    const x2 = t.x - dx/dist*(tr+2), y2 = t.y - dy/dist*(tr+2);
+    svg.appendChild(el('line', { x1, y1, x2, y2, stroke: '#1f2d50', 'stroke-width': '1.5', 'marker-end': 'url(#arrow)' }));
+
+    // edge label at midpoint
+    const mx = (x1+x2)/2, my = (y1+y2)/2;
+    const lbl = el('text', { x: mx, y: my-4, 'font-size': '8', fill: '#3a4a70',
+      'text-anchor': 'middle', 'font-family': 'DM Mono, monospace' }, e.label);
+    svg.appendChild(lbl);
+  });
+
+  // nodes
+  nodes.forEach(n => {
+    const r = n.id === 'anora' ? 40 : 28;
+    const g = el('g', { class: 'graph-node', style: 'cursor:pointer' });
+
+    const circle = el('circle', {
+      cx: n.x, cy: n.y, r,
+      fill: colors[n.type] + '22',
+      stroke: colors[n.type],
+      'stroke-width': n.id === 'anora' ? '2.5' : '1.5',
+    });
+
+    const labelLines = n.label.split(' ');
+    const text = el('text', { x: n.x, y: n.y, 'text-anchor': 'middle',
+      'dominant-baseline': 'central', fill: '#e8edf7',
+      'font-size': n.id === 'anora' ? '11' : '9',
+      'font-weight': n.id === 'anora' ? '700' : '400',
+      'font-family': 'Syne, sans-serif' });
+
+    if (labelLines.length <= 2) {
+      if (labelLines.length === 2) {
+        const t1 = el('tspan', { x: n.x, dy: '-5' }, labelLines[0]);
+        const t2 = el('tspan', { x: n.x, dy: '12' }, labelLines[1]);
+        text.appendChild(t1); text.appendChild(t2);
+      } else {
+        text.textContent = n.label;
+      }
+    } else {
+      const t1 = el('tspan', { x: n.x, dy: '-9' }, labelLines[0]+' '+labelLines[1]);
+      const t2 = el('tspan', { x: n.x, dy: '12' }, labelLines.slice(2).join(' '));
+      text.appendChild(t1); text.appendChild(t2);
+    }
+
+    g.appendChild(circle); g.appendChild(text);
+
+    // hover
+    g.addEventListener('mouseenter', () => circle.setAttribute('fill', colors[n.type] + '55'));
+    g.addEventListener('mouseleave', () => circle.setAttribute('fill', colors[n.type] + '22'));
+    svg.appendChild(g);
+  });
+})();
+</script>
+</body>
+</html>
